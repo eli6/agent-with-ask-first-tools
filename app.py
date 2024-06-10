@@ -76,14 +76,13 @@ def perform_assistant_action():
     st.session_state.assistant_action = False
 
 def handle_tool_call_attempt(ai_message, dangerToolCalled, message):
-    tool_calls = ai_message.additional_kwargs["tool_calls"][0] # todo handle several tool calls
-    function_args = tool_calls["function"]
-    arguments_json_str = function_args['arguments']
-    arguments_dict = json.loads(arguments_json_str)
-    query = arguments_dict['query']
-    name = function_args['name']
+    tool_calls = ai_message.additional_kwargs["tool_calls"]
+    args = tool_calls[0]["function"]["arguments"]
+    name = tool_calls[0]["function"]["name"]
+    query = json.loads(args)["query"]
     emoji = tool_emoji.get(name)
     tool_calls = message.tool_calls
+
     dangerToolCalled = any((tc.get("name") in unsafe_tool_names) for tc in ai_message.tool_calls)
 
     if(dangerToolCalled):
